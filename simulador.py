@@ -8,6 +8,10 @@ def simular_tlb_fifo(arquivo_trace, tamanho_tlb):
     with open(arquivo_trace, 'r') as arquivo:
         for linha in arquivo:
             linha = linha.strip()
+            
+            if linha.startswith("=="):
+                continue
+            
             if not linha: 
                 continue
 
@@ -17,7 +21,7 @@ def simular_tlb_fifo(arquivo_trace, tamanho_tlb):
 
             try:
                 operacao, endereco = partes[0], partes[1].split(',')[0]
-                pagina = endereco[:-3] 
+                pagina = endereco[:-3]  
             except IndexError:
                 continue  
 
@@ -27,11 +31,16 @@ def simular_tlb_fifo(arquivo_trace, tamanho_tlb):
                     falhas_instrucoes += 1  
                     tlb_instrucoes.append(pagina) 
 
-            elif operacao in ("L", "S"):  
-                total_dados += 1
+            elif operacao in ("L", "S", "M"):  
+                total_dados += 1  
+
+                if operacao == "M":
+                    total_dados += 1  
+
                 if pagina not in tlb_dados:
                     falhas_dados += 1  
                     tlb_dados.append(pagina) 
+
 
     taxa_falhas_instrucoes = (falhas_instrucoes / total_instrucoes) * 100 if total_instrucoes else 0
     taxa_falhas_dados = (falhas_dados / total_dados) * 100 if total_dados else 0
@@ -40,5 +49,5 @@ def simular_tlb_fifo(arquivo_trace, tamanho_tlb):
 arquivo_trace = input("Digite o nome do arquivo de trace: ")
 for tamanho in [4, 8, 16, 32, 64, 128]: 
     taxa_instrucoes, taxa_dados = simular_tlb_fifo(arquivo_trace, tamanho_tlb=tamanho)
-    print(f"Tamanho da TLB: {tamanho}, Taxa de Falhas (Instruções): {taxa_instrucoes:.2f}%, Taxa de Falhas (Dados): {taxa_dados:.2f}%")
+    print(f"Tamanho da TLB: {tamanho}, Taxa de Falhas (Instruções): {taxa_instrucoes:.5f}%, Taxa de Falhas (Dados): {taxa_dados:.5f}%")
 
