@@ -1,8 +1,24 @@
 from collections import deque
 
+
+class tlb_fifo:
+    def __init__(self, max_tamanho):
+        self.max_tamanho = max_tamanho
+        self.fila = []
+
+    def add(self, item):
+        if len(self.fila) >= self.max_tamanho:
+            self.fila.pop(0)  # Remove o mais antigo
+        self.fila.append(item)
+
+    def __contains__(self, item):
+        return item in self.fila  # Verifica se o item está na fila
+
+
+
 def simular_tlb_fifo(arquivo_trace, tamanho_tlb):
-    tlb_instrucoes = deque(maxlen=tamanho_tlb)  
-    tlb_dados = deque(maxlen=tamanho_tlb)       
+    tlb_instrucoes = tlb_fifo(tamanho_tlb)  
+    tlb_dados = tlb_fifo(tamanho_tlb)       
     falhas_instrucoes, falhas_dados = 0, 0
     total_instrucoes, total_dados = 0, 0
     with open(arquivo_trace, 'r') as arquivo:
@@ -29,7 +45,7 @@ def simular_tlb_fifo(arquivo_trace, tamanho_tlb):
                 total_instrucoes += 1
                 if pagina not in tlb_instrucoes:
                     falhas_instrucoes += 1  
-                    tlb_instrucoes.append(pagina) 
+                    tlb_instrucoes.add(pagina) 
 
             elif operacao in ("L", "S", "M"):  
                 total_dados += 1  
@@ -39,7 +55,7 @@ def simular_tlb_fifo(arquivo_trace, tamanho_tlb):
 
                 if pagina not in tlb_dados:
                     falhas_dados += 1  
-                    tlb_dados.append(pagina) 
+                    tlb_dados.add(pagina) 
 
 
     taxa_falhas_instrucoes = (falhas_instrucoes / total_instrucoes) * 100 if total_instrucoes else 0
