@@ -1,6 +1,3 @@
-from collections import deque
-
-
 class tlb_fifo:
     def __init__(self, max_tamanho):
         self.max_tamanho = max_tamanho
@@ -8,13 +5,11 @@ class tlb_fifo:
 
     def add(self, item):
         if len(self.fila) >= self.max_tamanho:
-            self.fila.pop(0)  # Remove o mais antigo
+            self.fila.pop(0)
         self.fila.append(item)
 
     def __contains__(self, item):
-        return item in self.fila  # Verifica se o item está na fila
-
-
+        return item in self.fila  
 
 def simular_tlb_fifo(arquivo_trace, tamanho_tlb):
     tlb_instrucoes = tlb_fifo(tamanho_tlb)  
